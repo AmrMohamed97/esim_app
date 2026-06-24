@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// start the app
 void main() => runApp(const ApduPosApp());
 
 class ApduPosApp extends StatelessWidget {
