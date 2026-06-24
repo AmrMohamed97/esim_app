@@ -1,0 +1,1 @@
+ D:\\esim\\apdu_pos\\apdu_pos\\.dart_tool\\flutter_build\\8ab170b856b9d3f8dee9299be8b3f51a\\native_assets.json: 
