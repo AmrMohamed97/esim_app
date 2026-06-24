@@ -33,7 +33,7 @@ android {
         applicationId = "com.example.apdu_pos"
         // minSdk 26 lets us call iccOpenLogicalChannel(aid, p2) without
         // falling back to the no-p2 variant.
-        minSdk = 26
+        minSdk = 24
         targetSdk = 34
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName

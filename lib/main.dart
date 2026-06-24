@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+/// start the app
 void main() => runApp(const ApduPosApp());
 
 class ApduPosApp extends StatelessWidget {
@@ -11,6 +12,7 @@ class ApduPosApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'APDU POS',
       theme: ThemeData(
         useMaterial3: true,
@@ -26,8 +28,8 @@ class Telephony {
   static const _ch = MethodChannel('apdu_pos/telephony');
 
   static Future<bool> hasCarrierPrivileges({int slot = 0}) async {
-    final v = await _ch.invokeMethod<bool>(
-        'hasCarrierPrivileges', {'slot': slot});
+    final v =
+        await _ch.invokeMethod<bool>('hasCarrierPrivileges', {'slot': slot});
     return v ?? false;
   }
 
@@ -94,8 +96,7 @@ class _HomePageState extends State<HomePage> {
   final _aidCtrl = TextEditingController(text: 'A00000015141434C00');
   final _p2Ctrl = TextEditingController(text: '0');
   // Default APDU: SELECT by AID — replace with whatever your applet expects.
-  final _apduCtrl =
-      TextEditingController(text: '80CA00A000');
+  final _apduCtrl = TextEditingController(text: '80CA00A000');
 
   int? _openChannel;
   String _lastSelectResponse = '';
@@ -123,14 +124,12 @@ class _HomePageState extends State<HomePage> {
 
   void _push(String line) {
     setState(() {
-      _log.insert(0,
-          '${TimeOfDay.now().format(context)}  $line');
+      _log.insert(0, '${TimeOfDay.now().format(context)}  $line');
       if (_log.length > 200) _log.removeLast();
     });
   }
 
-  Future<void> _runGuarded(
-      String label, Future<void> Function() body) async {
+  Future<void> _runGuarded(String label, Future<void> Function() body) async {
     setState(() => _busy = true);
     try {
       await body();
@@ -146,8 +145,8 @@ class _HomePageState extends State<HomePage> {
   Future<void> _openChannelTap() => _runGuarded('open', () async {
         final aid = _aidCtrl.text.trim().replaceAll(' ', '');
         final p2 = int.tryParse(_p2Ctrl.text.trim()) ?? 0;
-        final r = await Telephony.openLogicalChannel(
-            slot: _slot, aid: aid, p2: p2);
+        final r =
+            await Telephony.openLogicalChannel(slot: _slot, aid: aid, p2: p2);
         final ch = r['channel'] as int? ?? -1;
         final st = r['status'] as int? ?? -1;
         final sel = (r['selectResponse'] as String?) ?? '';
@@ -167,7 +166,8 @@ class _HomePageState extends State<HomePage> {
         }
         final apdu = _parseApdu(_apduCtrl.text);
         if (apdu == null) {
-          _push('transmit: APDU must be >= 4 hex bytes (CLA INS P1 P2 [Lc Data] [Le])');
+          _push(
+              'transmit: APDU must be >= 4 hex bytes (CLA INS P1 P2 [Lc Data] [Le])');
           return;
         }
         final resp = await Telephony.transmitApdu(
@@ -189,7 +189,8 @@ class _HomePageState extends State<HomePage> {
           _push('close: no open channel');
           return;
         }
-        final ok = await Telephony.closeLogicalChannel(slot: _slot, channel: ch);
+        final ok =
+            await Telephony.closeLogicalChannel(slot: _slot, channel: ch);
         _push('close channel=$ch → $ok');
         setState(() => _openChannel = null);
       });
@@ -230,13 +231,12 @@ class _HomePageState extends State<HomePage> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceVariant,
+                  color: theme.colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: SelectableText(
                   _log.isEmpty ? '(empty)' : _log.join('\n'),
-                  style: const TextStyle(
-                      fontFamily: 'monospace', fontSize: 12),
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
                 ),
               ),
             ],
@@ -252,7 +252,7 @@ class _HomePageState extends State<HomePage> {
         ? Colors.green.shade100
         : p == false
             ? Colors.red.shade100
-            : theme.colorScheme.surfaceVariant;
+            : theme.colorScheme.surfaceContainerHighest;
     final text = p == null
         ? 'Carrier privileges: checking…'
         : p
@@ -262,8 +262,8 @@ class _HomePageState extends State<HomePage> {
                 'platform-signed or the eSIM has an ARA-M rule for this cert.';
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-          color: color, borderRadius: BorderRadius.circular(8)),
+      decoration:
+          BoxDecoration(color: color, borderRadius: BorderRadius.circular(8)),
       child: Text(text),
     );
   }
@@ -286,8 +286,7 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(width: 12),
               TextButton(
-                  onPressed: _refreshPrivileges,
-                  child: const Text('Check')),
+                  onPressed: _refreshPrivileges, child: const Text('Check')),
             ],
           ),
         ),
